@@ -43,7 +43,7 @@ JPH_ALLOC_SCOPE void *JPH_ALLOC_FN(AlignedAllocate)(size_t inSize, size_t inAlig
 #if defined(JPH_PLATFORM_WINDOWS)
 	// Microsoft doesn't implement posix_memalign
 	return _aligned_malloc(inSize, inAlignment);
-#else
+#elif defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L)
 	void *block = nullptr;
 	JPH_SUPPRESS_WARNING_PUSH
 	JPH_GCC_SUPPRESS_WARNING("-Wunused-result")
@@ -51,6 +51,10 @@ JPH_ALLOC_SCOPE void *JPH_ALLOC_FN(AlignedAllocate)(size_t inSize, size_t inAlig
 	posix_memalign(&block, inAlignment, inSize);
 	JPH_SUPPRESS_WARNING_POP
 	return block;
+#elif defined(_ISOC11_SOURCE)
+	return aligned_alloc(inAlignment, inSize);
+#else
+	return nullptr;
 #endif
 }
 

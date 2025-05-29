@@ -96,6 +96,8 @@
 	#define JPH_PLATFORM_WASM
 #elif defined(__vita__) || defined(__VITA__)
 	#define JPH_PLATFORM_VITA
+#elif defined(__psp__) || defined(__PSP__)
+	#define JPH_PLATFORM_PSP
 #endif
 
 // Platform helper macros
@@ -243,6 +245,12 @@
 	#if defined(__SSE__) && !defined(JPH_USE_SSE)
 		#define JPH_USE_SSE
 	#endif
+#elif defined(__mips__) || defined(__mips) || defined(__MIPS__)
+	// MIPS CPU architecture
+	#define JPH_CPU_MIPS
+	#define JPH_CPU_ADDRESS_BITS 32
+	#define JPH_VECTOR_ALIGNMENT 16
+	#define JPH_DVECTOR_ALIGNMENT 32
 #else
 	#error Unsupported CPU architecture
 #endif
@@ -397,10 +405,10 @@
 	// Creating one should only be a couple of minutes of work if you have the documentation for the platform
 	// (you only need to define JPH_BREAKPOINT, JPH_PLATFORM_BLUE_GET_TICKS, JPH_PLATFORM_BLUE_MUTEX*, JPH_PLATFORM_BLUE_RWLOCK*, JPH_PLATFORM_BLUE_SEMAPHORE* and include the right header).
 	#include <Jolt/Core/PlatformBlue.h>
-#elif defined(JPH_PLATFORM_LINUX) || defined(JPH_PLATFORM_ANDROID) || defined(JPH_PLATFORM_MACOS) || defined(JPH_PLATFORM_IOS) || defined(JPH_PLATFORM_BSD) || defined(JPH_PLATFORM_VITA)
+#elif defined(JPH_PLATFORM_LINUX) || defined(JPH_PLATFORM_ANDROID) || defined(JPH_PLATFORM_MACOS) || defined(JPH_PLATFORM_IOS) || defined(JPH_PLATFORM_BSD) || defined(JPH_PLATFORM_VITA) || defined(JPH_PLATFORM_PSP)
 	#if defined(JPH_CPU_X86)
 		#define JPH_BREAKPOINT	__asm volatile ("int $0x3")
-	#elif defined(JPH_CPU_ARM) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_E2K) || defined(JPH_CPU_PPC) || defined(JPH_CPU_LOONGARCH)
+	#elif defined(JPH_CPU_ARM) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_E2K) || defined(JPH_CPU_PPC) || defined(JPH_CPU_LOONGARCH) || defined(JPH_CPU_MIPS)
 		#define JPH_BREAKPOINT	__builtin_trap()
 	#else
 		#error Unknown CPU architecture
@@ -458,7 +466,7 @@ JPH_SUPPRESS_WARNINGS_STD_BEGIN
 #if defined(JPH_COMPILER_MSVC) || (defined(JPH_COMPILER_CLANG) && defined(_MSC_VER)) // MSVC or clang-cl
 	#include <malloc.h> // for alloca
 #endif
-#if defined(JPH_PLATFORM_VITA)
+#if defined(JPH_PLATFORM_VITA) || defined(JPH_PLATFORM_PSP)
 	#include <alloca.h> // for alloca
 #endif
 #if defined(JPH_USE_SSE)
@@ -494,7 +502,7 @@ using std::ostream;
 using std::istream;
 
 // Standard types
-using uint = unsigned int;
+using uint = std::uint_least32_t;
 using uint8 = std::uint8_t;
 using uint16 = std::uint16_t;
 using uint32 = std::uint32_t;

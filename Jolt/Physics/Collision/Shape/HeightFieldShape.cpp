@@ -202,8 +202,8 @@ uint32 HeightFieldShapeSettings::CalculateBitsPerSampleForError(float inMaxError
 void HeightFieldShape::CalculateActiveEdges(uint inX, uint inY, uint inSizeX, uint inSizeY, const float *inHeights, uint inHeightsStartX, uint inHeightsStartY, intptr_t inHeightsStride, float inHeightsScale, float inActiveEdgeCosThresholdAngle, TempAllocator &inAllocator)
 {
 	// Limit the block size so we don't allocate more than 64K memory from the temp allocator
-	uint block_size_x = min(inSizeX, 44u);
-	uint block_size_y = min(inSizeY, 44u);
+	uint block_size_x = min(inSizeX, uint(44));
+	uint block_size_y = min(inSizeY, uint(44));
 
 	// Allocate temporary buffer for normals
 	uint normals_size = 2 * (block_size_x + 1) * (block_size_y + 1) * sizeof(Vec3);
@@ -2023,7 +2023,7 @@ public:
 			else
 			{
 				// Visit child grid
-				uint32 stride = min(1U << level, max_stride); // At the most detailed level we store a non-power of 2 number of blocks
+				uint32 stride = min(uint32(1U << level), max_stride); // At the most detailed level we store a non-power of 2 number of blocks
 				uint32 offset = sGridOffsets[level] + stride * y + x;
 
 				// Decode min/max height
